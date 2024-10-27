@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ВКонтакте 2007 - Обновленная версия</title>
+    <style>
+        /* Основные стили */
+        body {
+            background-color: #f0f4f8;
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        header {
+            background-color: #3b5998; /* Facebook-like color */
+            color: white;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        #container {
+            display: flex;
+            justify-content: space-between;
+            max-width: 1200px;
+            margin: 20px auto;
+            flex-wrap: wrap;
+            padding: 20px;
+            border-radius: 10px;
+            background-color: #ffffff;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        nav {
+            background-color: #fff;
+            padding: 20px;
+            width: 250px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            position: relative;
+        }
+
+        nav h2 {
+            margin-top: 0;
+            font-size: 1.5em;
+            border-bottom: 2px solid #3b5998; /* Separator */
+            padding-bottom: 10px;
+        }
+
+        nav a {
+            display: block;
+            padding: 10px;
+            color: #007BFF;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background-color 0.2s;
+        }
+
+        nav a:hover {
+            background-color: #e9ecef;
+        }
+
+        main {
+            flex: 1;
+            margin-left: 20px;
+            min-width: 300px;
+        }
+
+        .section {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            flex-basis: 100%;
+        }
+
+        h2, h3 {
+            color: #2a2a2a;
+            margin-bottom: 15px;
+        }
+
+        .profile-photo {
+            margin-top: 10px;
+            max-width: 100px;
+            border-radius: 50%;
+        }
+
+        .button, button {
+            background-color: #3b5998; /* Facebook-like color */
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 16px;
+            transition: background-color 0.3s;
+            margin-top: 10px;
+            width: 100%;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .button:hover, button:hover {
+            background-color: #2e468e; /* Darker shade */
+        }
+
+        .post {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+        }
+
+        .post-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .post-header img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+
+        .post-actions button {
+            margin-right: 5px;
+        }
+
+        /* Адаптивный дизайн */
+        @media (max-width: 768px) {
+            #container {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            nav {
+                width: 100%;
+                margin-bottom: 20px;
+            }
+
+            main {
+                margin-left: 0;
+            }
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        input[type="text"], input[type="password"], textarea {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus, input[type="password"]:focus, textarea:focus {
+            border-color: #3b5998; /* Highlight color */
+        }
+
+        .remove-friend {
+            background-color: #ff4d4d; /* Red color */
+            margin-top: 10px;
+            width: auto;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>ВКонтакте 2007 - Обновленная версия</h1>
+    </header>
+    <div id="container">
+        <nav>
+            <h2>Меню</h2>
+            <button id="logoutButton" onclick="logout()">Выйти</button>
+            <h3>Друзья</h3>
+            <ul id="friendsList"></ul>
+            <input type="text" id="friendUsername" placeholder="Добавить друга">
+            <button onclick="addFriend()">Добавить друга</button>
+            <input type="text" id="searchBar" placeholder="Поиск друзей..." onkeyup="searchFriends()">
+        </nav>
+        <main>
+            <div class="section" id="authSection">
+                <h2>Вход / Регистрация</h2>
+                <form id="authForm" onsubmit="auth(); return false;">
+                    <input type="text" id="authUsername" placeholder="Имя пользователя" required>
+                    <input type="password" id="authPassword" placeholder="Пароль" required>
+                    <button type="submit">Войти</button>
+                </form>
+                <button onclick="toggleRegistration()">Регистрация</button>
+                <div id="registrationSection" class="hidden">
+                    <h3>Регистрация</h3>
+                    <input type="text" id="regUsername" placeholder="Имя пользователя" required>
+                    <input type="password" id="regPassword" placeholder="Пароль" required>
+                    <input type="text" id="regBio" placeholder="О себе" required>
+                    <input type="file" id="regProfilePhoto" accept="image/*" onchange="previewProfilePhoto(event)">
+                    <img id="profilePhotoPreview" class="hidden profile-photo" alt="Просмотр фото профиля">
+                    <button type="button" onclick="register();">Зарегистрироваться</button>
+                </div>
+            </div>
+            <div class="section hidden" id="mainSection">
+                <h2>Добро пожаловать!</h2>
+                <div class="section" id="postSection">
+                    <h3>Публикации</h3>
+                    <textarea id="postContent" placeholder="Что нового?" rows="3"></textarea>
+                    <button type="button" onclick="publishPost();">Опубликовать</button>
+                    <div id="postsContainer"></div>
+                </div>
+                <div class="section" id="messageSection">
+                    <h3>Сообщения</h3>
+                    <input type="text" id="messageRecipient" placeholder="Кому" required>
+                    <textarea id="messageContent" placeholder="Ваше сообщение" rows="3"></textarea>
+                    <button type="button" onclick="sendMessage();">Отправить</button>
+                    <div id="messagesContainer"></div>
+                </div>
+            </div>
+        </main>
+    </div>
+    <script>
+        // Загрузка данных
+        let profiles = JSON.parse(localStorage.getItem("profiles")) || [];
+        let currentUser = localStorage.getItem("currentUser") || null;
+        let messages = JSON.parse(localStorage.getItem("messages")) || [];
+        let friends = JSON.parse(localStorage.getItem("friends")) || {};
+
+        // Показать список друзей
+        function showFriends() {
+            const friendsList = document.getElementById("friendsList");
+            friendsList.innerHTML = '';
+            const userFriends = friends[currentUser] || [];
+            userFriends.forEach(friend => {
+                const profile = profiles.find(p => p.username === friend);
+                const friendItem = document.createElement("li");
+                friendItem.innerHTML = `
+                    <img src="${profile.profilePhoto}" class="profile-photo" alt="${friend}">
+                    <strong>${friend}</strong><br>
+                    <span>${profile.bio}</span>
+                `;
+
+                const removeButton = document.createElement("button");
+                removeButton.innerText = "Удалить";
+                removeButton.className = "remove-friend";
+                removeButton.onclick = () => removeFriend(friend);
+
+                friendItem.appendChild(removeButton);
+                friendsList.appendChild(friendItem);
+            });
+        }
+
+        // Добавить друга
+        function addFriend() {
+            const friendUsername = document.getElementById("friendUsername").value;
+            if (!friends[currentUser]) {
+                friends[currentUser] = [];
+            }
+            if (!friends[currentUser].includes(friendUsername)) {
+                friends[currentUser].push(friendUsername);
+                localStorage.setItem("friends", JSON.stringify(friends));
+                showFriends();
+                document.getElementById("friendUsername").value = '';
+            } else {
+                alert("Этот пользователь уже в вашем списке друзей.");
+            }
+        }
+
+        // Удалить друга
+        function removeFriend(friend) {
+            if (friends[currentUser]) {
+                friends[currentUser] = friends[currentUser].filter(f => f !== friend);
+                localStorage.setItem("friends", JSON.stringify(friends));
+                showFriends();
+            }
+        }
+
+        // Поиск друзей
+        function searchFriends() {
+            const filter = document.getElementById("searchBar").value.toLowerCase();
+            const friendsList = document.getElementById("friendsList");
+            friendsList.innerHTML = '';
+
+            const userFriends = friends[currentUser] || [];
+            userFriends.forEach(friend => {
+                if (friend.toLowerCase().includes(filter)) {
+                    const profile = profiles.find(p => p.username === friend);
+                    const friendItem = document.createElement("li");
+                    friendItem.innerHTML = `
+                        <img src="${profile.profilePhoto}" class="profile-photo" alt="${friend}">
+                        <strong>${friend}</strong><br>
+                        <span>${profile.bio}</span>
+                    `;
+
+                    const removeButton = document.createElement("button");
+                    removeButton.innerText = "Удалить";
+                    removeButton.className = "remove-friend";
+                    removeButton.onclick = () => removeFriend(friend);
+
+                    friendItem.appendChild(removeButton);
+                    friendsList.appendChild(friendItem);
+                }
+            });
+        }
+
+        // Отправить сообщение
+        function sendMessage() {
+            const recipient = document.getElementById("messageRecipient").value;
+            const messageContent = document.getElementById("messageContent").value;
+            if (!recipient || !messageContent) {
+                alert("Пожалуйста, заполните все поля.");
+                return;
+            }
+
+            const message = {
+                sender: currentUser,
+                recipient: recipient,
+                content: messageContent,
+                timestamp: new Date().toLocaleString()
+            };
+
+            messages.push(message);
+            localStorage.setItem("messages", JSON.stringify(messages));
+            document.getElementById("messageContent").value = '';
+            displayMessages();
+        }
+
+        // Отобразить сообщения
+        function displayMessages() {
+            const messagesContainer = document.getElementById("messagesContainer");
+            messagesContainer.innerHTML = '';
+            const userMessages = messages.filter(msg => 
+                msg.sender === currentUser || msg.recipient === currentUser
+            );
+
+            userMessages.forEach(msg => {
+                const msgDiv = document.createElement("div");
+                msgDiv.innerHTML = `<strong>${msg.sender}:</strong> ${msg.content} <em>${msg.timestamp}</em>`;
+                messagesContainer.appendChild(msgDiv);
+            });
+        }
+
+        // Публикация поста
+        function publishPost() {
+            const postContent = document.getElementById("postContent").value;
+            if (!postContent) {
+                alert("Пожалуйста, введите текст для публикации.");
+                return;
+            }
+
+            const postDiv = document.createElement("div");
+            postDiv.className = "post";
+            const userProfile = profiles.find(p => p.username === currentUser);
+            postDiv.innerHTML = `
+                <div class="post-header">
+                    <img src="${userProfile.profilePhoto}" alt="${currentUser}">
+                    <strong>${currentUser}</strong>
+                </div>
+                <p>${postContent}</p>
+            `;
+            document.getElementById("postsContainer").appendChild(postDiv);
+            document.getElementById("postContent").value = '';
+        }
+
+        // Аутентификация пользователя
+        function auth() {
+            const username = document.getElementById("authUsername").value;
+            const password = document.getElementById("authPassword").value;
+
+            const profile = profiles.find(p => p.username === username && p.password === password);
+            if (profile) {
+                currentUser = username;
+                localStorage.setItem("currentUser", username);
+                document.getElementById("authSection").classList.add("hidden");
+                document.getElementById("mainSection").classList.remove("hidden");
+                showFriends();
+                displayMessages();
+                startMessageUpdate(); // Начинаем обновление сообщений в реальном времени
+            } else {
+                alert("Неверное имя пользователя или пароль.");
+            }
+        }
+
+        // Регистрация пользователя
+        function register() {
+            const username = document.getElementById("regUsername").value;
+            const password = document.getElementById("regPassword").value;
+            const bio = document.getElementById("regBio").value;
+            const profilePhoto = document.getElementById("regProfilePhoto").files[0];
+
+            const newProfile = {
+                username: username,
+                password: password,
+                bio: bio,
+                profilePhoto: URL.createObjectURL(profilePhoto)
+            };
+
+            profiles.push(newProfile);
+            localStorage.setItem("profiles", JSON.stringify(profiles));
+            alert("Регистрация успешна. Вы можете войти.");
+            toggleRegistration();
+        }
+
+        // Предпросмотр фото профиля
+        function previewProfilePhoto(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const preview = document.getElementById("profilePhotoPreview");
+                    preview.src = e.target.result;
+                    preview.classList.remove("hidden");
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        // Выйти из системы
+        function logout() {
+            currentUser = null;
+            localStorage.removeItem("currentUser");
+            document.getElementById("authSection").classList.remove("hidden");
+            document.getElementById("mainSection").classList.add("hidden");
+        }
+
+        // Смена регистрации/входа
+        function toggleRegistration() {
+            const registrationSection = document.getElementById("registrationSection");
+            registrationSection.classList.toggle("hidden");
+        }
+
+        // Обновление сообщений
+        function startMessageUpdate() {
+            setInterval(() => {
+                const storedMessages = JSON.parse(localStorage.getItem("messages")) || [];
+                if (JSON.stringify(storedMessages) !== JSON.stringify(messages)) {
+                    messages = storedMessages;
+                    displayMessages(); // Обновление сообщений
+                }
+            }, 1000); // Проверка на новые сообщения каждую секунду
+        }
+    </script>
+</body>
+</html>
+
+
+
+
+
+
